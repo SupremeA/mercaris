@@ -1,0 +1,8 @@
+<h1>Welcome to the Mercaris Sample App</h1>
+
+<h3>Please load your csv file here:</h3>
+
+  <%= form_tag import_reports_path, multipart: true do %>
+    <%= file_field_tag :file %>
+    <%= submit_tag "Import" %>
+  <% end %>
