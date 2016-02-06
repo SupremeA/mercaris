@@ -6,3 +6,48 @@
     <%= file_field_tag :file %>
     <%= submit_tag "Import" %>
   <% end %>
+<br>
+<br>
+<script type="text/javascript" charset="utf-8">
+  $(function() {
+    new Highcharts.Chart({
+          chart: {
+            renderTo: "corn_report"
+          },
+          title: {
+            text: "Corn Prices by Day"
+        },
+        xAxis: {
+          title: {
+            text: "Date"
+          },
+          type: "datetime"
+        },
+        tooltip: {
+          formatter: function() {
+            return Highcharts.dateFormat("%B %e, %Y", this.x) + ': ' +
+              "$" + Highcharts.numberFormat(this.y, 2);
+          }
+        },
+        yAxis: {
+          title: {
+            text: "Cost"
+          }
+        },
+        series: [
+          <% { "Corn" => Report.corn, "Organic Corn" => Report.organic }.each do |name, reports| %>
+          {
+          name: "<%= name %>",
+          pointInterval: <%= 14.days*1000 %>,
+          pointStart: <%= (reports.last.start_time.to_date.to_time.to_i * 1000) if reports.present? %>,
+          pointEnd: <%= (reports.first.start_time.to_date.to_time.to_i * 1000) if reports.present? %>,
+          data: <%= reports.map { |each| each.price.to_f }.inspect %>
+        },
+        <% end %>
+        ]
+      });
+    });
+  </script>
+  <% if Report.any? %>
+    <div id="corn_report" style="width:90%; height:400px;"></div>
+  <% end %>
